@@ -36,8 +36,12 @@ python3 ./query_annif.py warcs/results/content.csv warcs/results/scores.csv
 # Don't forget to save the output files to a safe place!
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-# Assume a SQLite3 DB exists and wikidata table is populated
-#find warcs -name 'webpages.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" webpages"' {} \;
-#find warcs -name 'scores.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" scores"' {} \;
+# Create SQLite database and schema
+sqlite3 mydb.db < QuickDBD-export.sql
+sqlite3 mydb.db -cmd ".mode tabs" -cmd ".import wikidata.tsv wikidata"
+
+# Import webpage and score data
+find warcs -name 'webpages.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" webpages"' {} \;
+find warcs -name 'scores.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" scores"' {} \;
 # Required for fulltext analysis
-#find warcs -name 'content.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" content"' {} \;
+find warcs -name 'content.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" content"' {} \;
