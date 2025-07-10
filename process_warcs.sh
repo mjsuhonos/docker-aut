@@ -38,7 +38,7 @@ python3 ./query_annif.py warcs/results/content.csv warcs/results/scores.csv
 
 # Create SQLite database and schema
 sqlite3 mydb.db < QuickDBD-export.sql
-sqlite3 mydb.db -cmd ".mode tabs" -cmd ".import wikidata.tsv wikidata"
+sqlite3 mydb.db -cmd ".mode tabs" -cmd ".import vocab.tsv vocab"
 
 # Import webpage and score data
 find warcs -name 'webpages.csv' -exec sh -c 'sqlite3 mydb.db -cmd ".mode csv" -cmd ".import \"$0\" webpages"' {} \;

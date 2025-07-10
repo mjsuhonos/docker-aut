@@ -1,7 +1,7 @@
-﻿CREATE TABLE "Wikidata" (
+﻿CREATE TABLE "Vocab" (
     "QID" TEXT NOT NULL,
     "PrefLabel" TEXT  NOT NULL,
-    CONSTRAINT "pk_Wikidata" PRIMARY KEY (
+    CONSTRAINT "pk_Vocab" PRIMARY KEY (
         "QID"
      )
     FOREIGN KEY("QID") REFERENCES "Scores" ("QID")
@@ -39,8 +39,8 @@ CREATE TABLE "Content" (
 );
 
 
-CREATE INDEX "idx_Wikidata_PrefLabel"
-ON "Wikidata" ("PrefLabel");
+CREATE INDEX "idx_Vocab_PrefLabel"
+ON "Vocab" ("PrefLabel");
 
 CREATE INDEX "idx_Webpages_Domain"
 ON "Webpages" ("Domain");
