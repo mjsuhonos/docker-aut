@@ -1,4 +1,4 @@
-# Base Alpine Linux based image with OpenJDK and Maven
+# Base Debian Linux based image with OpenJDK and Maven
 FROM maven:3-jdk-11
 
 # Metadata
@@ -25,5 +25,19 @@ RUN mkdir /spark \
     && wget -q "https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop2.tgz" \
     && tar -xf "/tmp/spark-$SPARK_VERSION-bin-hadoop2.tgz" -C /spark --strip-components=1 \
     && rm "/tmp/spark-$SPARK_VERSION-bin-hadoop2.tgz"
+
+# Install pip
+RUN apt-get update && \
+    apt-get install -y python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+# HTML text extraction
+RUN pip install readability-lxml
+RUN pip install html5lib
+RUN pip install lxml
+RUN pip install bs4
+
+# Hash for indexing in SQLite
+RUN pip install cityhash
 
 CMD /spark/bin/spark-shell --jars /aut/target/aut-1.2.1-SNAPSHOT-fatjar.jar
