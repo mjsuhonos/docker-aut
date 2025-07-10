@@ -24,8 +24,12 @@ session = requests.Session()  # Create a session object
 
 # List of N different API URLs
 api_urls = [
-    'http://localhost:5000/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    # Add more URLs as needed
+    'http://localhost:5001/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5002/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5003/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5004/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5005/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5006/v1/projects/u1-broader-e-arch0-en/suggest-batch',
 ]
 
 def send_request(batch, url):
