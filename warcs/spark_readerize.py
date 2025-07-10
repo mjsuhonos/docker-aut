@@ -43,7 +43,7 @@ if __name__ == '__main__':
     cityhash_udf = udf(get_cityhash_128, StringType())
     datetime_udf = udf(current_datetime)
 
-    warc = WebArchive(sc, sqlContext, "/warcs/CC-NEWS-202501*.gz")
+    warc = WebArchive(sc, sqlContext, "/warcs/*.gz")
 
     results = warc.all() \
         .select(cityhash_udf("url").alias("hash"), \
@@ -52,4 +52,4 @@ if __name__ == '__main__':
         datetime_udf().alias("extract_date")) \
         .filter(detect_language(col("reader")) == "en")
 
-    results.write.csv("/warcs/CC-NEWS-202501")
+    results.write.csv("/warcs/results")
