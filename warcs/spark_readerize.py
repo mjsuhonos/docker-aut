@@ -20,6 +20,7 @@ def soupify(raw_html):
 def extract_readability(clean_html):
     try:
         doc = Document(clean_html)
+        # TODO: we can get doc.title() at this point as well
         return doc.summary()
     except Exception as e:
         logging.error(f"Error extracting content: {e}")

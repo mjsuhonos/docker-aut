@@ -24,18 +24,17 @@ session = requests.Session()  # Create a session object
 
 # List of N different API URLs
 api_urls = [
-    'http://localhost:5001/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    'http://localhost:5002/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    'http://localhost:5003/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    'http://localhost:5004/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    'http://localhost:5005/v1/projects/u1-broader-e-arch0-en/suggest-batch',
-    'http://localhost:5006/v1/projects/u1-broader-e-arch0-en/suggest-batch',
+    'http://localhost:5001/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
+    'http://localhost:5002/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
+    'http://localhost:5003/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
+    'http://localhost:5004/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
+    'http://localhost:5005/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
+    'http://localhost:5006/v1/projects/u1-broader-e-arch0-en/suggest-batch?limit=5',
 ]
 
 def send_request(batch, url):
     data = {
-        "documents": [{"text": text, "document_id": hash_value} for hash_value, text in batch],
-        'limit': 5
+        "documents": [{"text": text, "document_id": hash_value} for hash_value, text in batch]
     }
     # This is the slowest step
     response = session.post(url, json=data)  # Use the session to send the request
