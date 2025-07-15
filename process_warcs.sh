@@ -31,6 +31,27 @@ poetry run annif run --port 5004 &
 poetry run annif run --port 5005 &
 poetry run annif run --port 5006 &
 
+curl -X 'POST' 'http://127.0.0.1:5001/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://127.0.0.1:5002/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://127.0.0.1:5003/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://127.0.0.1:5004/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://127.0.0.1:5005/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://127.0.0.1:5006/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+
+poetry run annif run --host 10.137.64.230 --port 5001 &
+poetry run annif run --host 10.137.64.230 --port 5002 &
+poetry run annif run --host 10.137.64.230 --port 5003 &
+poetry run annif run --host 10.137.64.230 --port 5004 &
+poetry run annif run --host 10.137.64.230 --port 5005 &
+poetry run annif run --host 10.137.64.230 --port 5006 &
+
+curl -X 'POST' 'http://10.137.64.230:5001/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://10.137.64.230:5002/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://10.137.64.230:5003/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://10.137.64.230:5004/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://10.137.64.230:5005/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+curl -X 'POST' 'http://10.137.64.230:5006/v1/projects/u1-broader-e-arch0-en/suggest' -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'text=test&limit=1&threshold=0&language=' &
+
 python3 ./query_annif.py warcs/results/content.csv warcs/results/scores.csv
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

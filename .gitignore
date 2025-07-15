@@ -22,3 +22,5 @@ vendor/pkg/
 hack/integration-cli-on-swarm/integration-cli-on-swarm
 warcs/*
 !warcs/spark_readerize.py
+SQL/*
+!SQL/*.sql
