@@ -1,42 +1,20 @@
 import csv
-import requests
+import aiohttp
+import asyncio
 import datetime
 import argparse
 import random
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import cycle
-from threading import Lock
 
 # Set up argument parsing
 parser = argparse.ArgumentParser(description='Process some files.')
 parser.add_argument('input_file', type=str, help='Input CSV file')
 parser.add_argument('output_file', type=str, help='Output CSV file')
-
-# Parse arguments
 args = parser.parse_args()
 
 # Assign variables from arguments
 input_file = args.input_file
 output_file = args.output_file
-
-# Initialize the lock at the beginning of your main function or as a global variable
-write_lock = Lock()
-
-# Define a retry strategy
-retry_strategy = Retry(
-    total=5,  # Total number of retries
-    backoff_factor=1,  # Wait time between retries
-    status_forcelist=[429, 500, 502, 503, 504]  # Status codes to retry on
-)
-
-session = requests.Session()  # Create a session object
-
-# Mount the retry strategy to the session
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("http://", adapter)
-session.mount("https://", adapter)
 
 # List of N different API URLs
 api_urls = [
@@ -55,17 +33,16 @@ api_urls = [
 ]
 random.shuffle(api_urls)
 
-def send_request(batch, url):
+async def send_request(session, batch, url):
     data = {
         "documents": [{"text": text, "document_id": hash_value} for hash_value, text in batch]
     }
     # This is the slowest step
-    response = session.post(url, json=data)  # Use the session to send the request
-    return response
+    async with session.post(url, json=data) as response:
+        return await response.json(), response.status
 
-def process_response(batch_start, response, csv_writer):
-    if response.status_code == 200:
-        batch_suggestions = response.json()
+def process_response(batch_start, batch_suggestions, status_code, csv_writer):
+    if status_code == 200:
         for document_suggestions in batch_suggestions:
             hash_value = document_suggestions['document_id']
             for suggestion in document_suggestions['results']:
@@ -75,52 +52,47 @@ def process_response(batch_start, response, csv_writer):
                 csv_writer.writerow([hash_value, qid, score, suggest_date])
         print(f"Suggested batch starting with row {batch_start}")
     else:
-        print(f"Error with batch starting at row {batch_start}: {response.status_code}")
-    
+        print(f"Error with batch starting at row {batch_start}: {status_code}")
 
-def main():
-    batch_size = 32  # Number of documents to send to each API (max 32)
-    N = 10  # Number of threads equals the number of API URLs
-
-    # If output_file exists, skip already-processed hashes
-    # Use case: interrupted/failed (long) runs
+async def main():
+    batch_size = 32 # Number of documents to send to each API (max 32)
     processed_hashes = set()
+
+    # Skip already-processed hashes
     try:
         with open(output_file, mode='r', newline='') as csv_file:
             csv_reader = csv.reader(csv_file)
             processed_hashes = {row[0] for row in csv_reader if row}
             print(f"Skipping {len(processed_hashes)}...")
     except FileNotFoundError:
-        pass  # It's okay if the file doesn't exist yet
+        pass # It's okay if the file doesn't exist yet
 
+    # Read input file and prepare rows
     print(f"Reading from {input_file}...")
-    
     with open(input_file, newline='') as csvfile:
         csv_reader = csv.reader(csvfile)
-        # Create a list of tuples
-        # Skip rows if the hash is in the set of processed hashes
         rows = [(row[0], row[1]) for row in csv_reader if row and row[0] not in processed_hashes]
 
-    with open(output_file, mode='a', newline='') as csv_file, ThreadPoolExecutor(max_workers=N) as executor:
+    # Write to output file
+    with open(output_file, mode='a', newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
-        url_cycle = cycle(api_urls)  # Create an iterator that cycles through the URLs
+        url_cycle = cycle(api_urls)
 
-        future_to_batch_start = {}
-        for batch_start in range(0, len(rows), batch_size):
-            url = next(url_cycle)  # Get the next URL from the cycle
-            batch = rows[batch_start:batch_start + batch_size]
-            future = executor.submit(send_request, batch, url)
-            future_to_batch_start[future] = batch_start
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for batch_start in range(0, len(rows), batch_size):
+                url = next(url_cycle)
+                batch = rows[batch_start:batch_start + batch_size]
+                task = asyncio.ensure_future(send_request(session, batch, url))
+                tasks.append((task, batch_start))
 
-        for future in as_completed(future_to_batch_start):
-            batch_start = future_to_batch_start[future]
-            try:
-                response = future.result()
-                process_response(batch_start, response, csv_writer)
-            except Exception as e:
-                print(f"Exception for batch starting at row {batch_start}: {e}")
+            responses = await asyncio.gather(*[t[0] for t in tasks])
+
+            for response, (task, batch_start) in zip(responses, tasks):
+                batch_suggestions, status_code = response
+                process_response(batch_start, batch_suggestions, status_code, csv_writer)
 
     print(f"Created {output_file}!")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
